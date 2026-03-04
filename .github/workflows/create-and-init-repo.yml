@@ -30,7 +30,7 @@ on:
         default: "DELETE"
 
       custom_domain:
-        description: "Pages 自定义域名（留空则不绑定）"
+        description: "Pages 自定义域名（例如: mall.fscitech.net；留空则不绑定）"
         required: false
         default: "mall.fscitech.net"
       enforce_https:
@@ -58,7 +58,6 @@ jobs:
 
     env:
       ORG: FutureTechQuant
-
       NEW_REPO: ${{ github.event.inputs.repo_name }}
       REPO_DESC: ${{ github.event.inputs.repo_description }}
       PRIVATE: ${{ github.event.inputs.private }}
@@ -168,8 +167,12 @@ jobs:
           set -euo pipefail
           mkdir -p source/.github/workflows
 
-          cp -f templates/workflows/native-build.yml source/.github/workflows/native-build.yml
-          cp -f templates/workflows/pages.yml       source/.github/workflows/pages.yml
+          cp -f templates/workflows/pages.yml source/.github/workflows/pages.yml
+
+          # 可选：如果你也需要 native-build.yml，就一起带过去
+          if [ -f templates/workflows/native-build.yml ]; then
+            cp -f templates/workflows/native-build.yml source/.github/workflows/native-build.yml
+          fi
 
           # 触发分支替换为 DEFAULT_BRANCH
           sed -i "s/branches: \\[ *master *\\]/branches: [ ${DEFAULT_BRANCH} ]/g" source/.github/workflows/*.yml || true
